@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+	<apiVersion>62.0</apiVersion>
+	<description>This progress bar will also offer the pop-up functionality which is missing from the standard progress bar functionality.  </description>
+	<isExposed>true</isExposed>
+	<targets>
+		<target>lightning__RecordPage</target>
+	</targets>
+</LightningComponentBundle>

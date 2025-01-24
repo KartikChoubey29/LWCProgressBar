@@ -1,0 +1,160 @@
+<template>
+   <article class="slds-card">
+    <div class="slds-card__body slds-card__body_inner">
+        <div class="slds-region_medium" style="width:auto">
+            <!-- Path Component -->
+          <div class="slds-path">
+    <div class="slds-grid slds-path__track">
+        <div class="slds-grid slds-path__scroller-container">
+            <div class="slds-path__scroller">
+                <div class="slds-path__scroller_inner">
+                    <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal"
+                        aria-labelledby="slds-path__stage-name">
+                        <!-- Planned Stage -->
+                        <li class={plannedStageClass} role="presentation">
+                            <a aria-selected={isPlannedStageActive} class="slds-path__link" id="path-50"
+                                role="option" tabindex="-1" data-value="Planned Stage"
+                                onclick={handleStepClick}>
+                                <span class="slds-path__stage">
+                                    <lightning-icon icon-name="utility:check" alternative-text="check" 
+                                        variant="inverse" size="small">
+                                    </lightning-icon>
+                                    <span class="slds-assistive-text">Stage Complete</span>
+                                </span>
+                                <span class="slds-path__title">Planned Stage</span>
+                            </a>
+                        </li>
+                        <!-- Order Received Stage -->
+                        <li class={orderReceivedStageClass} role="presentation">
+                            <a aria-selected={isOrderReceivedStageActive} class="slds-path__link" id="path-52"
+                                role="option" tabindex="0" data-value="Order Received"
+                                onclick={handleStepClick}>
+                                <span class="slds-path__stage">
+                                    <lightning-icon icon-name="utility:check" alternative-text="check" 
+                                        variant="inverse" size="small">
+                                    </lightning-icon>
+                                    <span class="slds-assistive-text">Current Stage</span>
+                                </span>
+                                <span class="slds-path__title">Order Received</span>
+                            </a>
+                        </li>
+                        <!-- Closed Stage  class={closedStageClass} -->
+                        <li class={closedStageClass} role="presentation">
+                            <a aria-selected={isClosedStageActive} class="slds-path__link" id="path-54"
+                                role="option" tabindex="-1" data-value="Closed"
+                                onclick={handleStepClick}>
+                                <span class="slds-path__stage">
+                                    <lightning-icon icon-name="utility:check" alternative-text="check" 
+                                        variant="inverse" size="small">
+                                    </lightning-icon>
+                                </span>
+                                <span class="slds-path__title ">{getCloseStatus}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+
+
+                <!-- Stage Name and Mark Complete Button -->
+                <div class="slds-grid slds-path__action">
+                    <span id="slds-path__stage-name" class="slds-path__stage-name">
+                        <b>Stage:</b> {selectedStep}
+                    </span>
+                    <lightning-button variant="brand" icon-name="utility:check" icon-position="left"
+                        label="Mark as Current Stage" onclick={handleClick}>
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>
+
+
+    <template if:true={showPopup}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={closePopup}>
+                        <lightning-icon icon-name="utility:close" alternative-text="Close" size="small"></lightning-icon>
+                    </button>
+                    <h2 class="slds-text-heading_medium">Customer Purchase Order Number Required </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+
+                    <div class="slds-p-around_medium lgc-bg">
+                        <lightning-input type="text"  data-id="purchaseOrderInput" required label="Please enter the customer purchase order number">
+                        </lightning-input>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button  class="slds-m-right_medium"  variant="neutral" label="Cancel" onclick={closePopup}></lightning-button>
+
+                    <lightning-button variant="brand" label="Confirm" onclick={confirmStage}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <!-- Close Pop Up Box -->
+    <template if:true={showClosePopup}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={closePopup}>
+                        <lightning-icon icon-name="utility:close" alternative-text="Close" size="small"></lightning-icon>
+                    </button>
+                    <h2 class="slds-text-heading_medium">Select Close Status</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+
+                    <div class="slds-p-around_medium lgc-bg">
+                        <lightning-record-edit-form object-api-name="Opportunity">
+                            <lightning-combobox name="CloseOption" label="StageName" placeholder="Select Close Option"
+                                options={CloseOptions} onchange={handleChange} required>
+                            </lightning-combobox>
+                            <template if:true={isRequired}>
+                              
+                                 <lightning-combobox
+                            name="lossReason"
+                            label="Loss Reason"
+                            value={selectedLossReason}
+                            placeholder="Select a reason"
+                            options={lossReasonOptions}
+                            onchange={handleLossReasonChange}
+                            required={isRequired}>
+                        </lightning-combobox>
+
+                        <lightning-combobox
+                            name="competitor"
+                            label="Competitor"
+                            value={selectedCompetitor}
+                            placeholder="Select a competitor"
+                            options={competitorOptions}
+                            onchange={handleCompetitorChange}
+                            required={isRequired}>
+                        </lightning-combobox>
+
+                                <lightning-input-field field-name="Loss_Comments__c" data-field="Loss_Comments__c"
+                                    required={isRequired}></lightning-input-field>
+
+                            </template>
+                        </lightning-record-edit-form>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button variant="neutral" label="Cancel" onclick={closePopup}></lightning-button>
+
+                    <lightning-button variant="brand" label="Confirm" onclick={handleSubmit}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+</template>
